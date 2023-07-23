@@ -45,3 +45,17 @@ func input(variable interface{},prompt ...string) {
 		}
 	}
 }
+
+
+func ensureDir(dir string) {
+	_, err := os.Stat(dir)
+	if err != nil {
+		// Create config directory
+		err = os.Mkdir(dir, 0755)
+		if err != nil {
+			fmt.Println("Error creating directory: " + err.Error())
+			os.Exit(1)
+		}
+	}
+}
+

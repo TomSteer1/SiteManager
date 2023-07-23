@@ -11,27 +11,11 @@ var configDir string
 
 func init() {
 	clear()
+	devDir := os.Getenv("HOME") + "/.config/tomsteer"
 	configDir = os.Getenv("HOME") + "/.config/tomsteer/portfolio-manager"
-	// Check if config directory exists
-	_, err := os.Stat(configDir)
-	if err != nil {
-		// Create config directory
-		err = os.Mkdir(configDir, 0755)
-		if err != nil {
-			fmt.Println("Error creating config directory: " + err.Error())
-			os.Exit(1)
-		}
-	}
-	// Check if portfolios directory exists
-	_, err = os.Stat(configDir + "/portfolios")
-	if err != nil {
-		// Create portfolios directory
-		err = os.Mkdir(configDir + "/portfolios", 0755)
-		if err != nil {
-			fmt.Println("Error creating portfolios directory: " + err.Error())
-			os.Exit(1)
-		}
-	}
+	ensureDir(devDir)
+	ensureDir(configDir)
+	ensureDir(configDir + "/portfolios")
 }
 
 func main() {
