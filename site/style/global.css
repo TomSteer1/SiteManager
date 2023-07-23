@@ -1,0 +1,97 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  background-color: #121212;
+  color : #fff;
+}
+
+html {
+	font-size: 62.5%;
+}
+
+body {
+	font-size: 1.8em;
+}
+
+a {
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+.container
+{
+  padding: 0 2rem;
+  margin-bottom: 1rem;
+}
+.navBar
+{
+    width: 100%;
+    background-color: #2e2e2e;
+    margin: 0;
+    padding: 0;
+}
+
+.navBar a
+{
+		color: inherit;
+		text-decoration: none;
+}
+
+.navBar__list
+{
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    overflow: hidden;
+    margin-top: 0;
+    padding: 0;
+    line-height: 64px;
+}
+
+@media (max-width: 1024px)
+{
+    .navBar__list__padding
+    {
+        display: none;
+    }
+    .navBar
+    {
+        padding-left: 5vw;
+        padding-right: 5vw;
+    }
+    .navBar a
+    {
+        font-size: 75%;
+    }
+}
+
+@media (max-width: 320px) {
+  .navBar a 
+  {
+    font-size: 50%;
+  }
+}
+
+
+/* Variables */
+/* Colours */
+
+:root{
+  --default-fg: #ffffff;
+  --default-bg: #000000;
+
+
+  --c-javascript-fg: #000000;
+  --c-javascript-bg: #f0db4f;
+  --c-node-bg: #215732;
+  --c-express-fg: #000000;
+  --c-google-fg: #000000;
+  --c-github-bg: #333333;
+  --c-azure-bg: #2ea2e5;
+}

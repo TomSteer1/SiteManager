@@ -1,0 +1,50 @@
+.social-icon {
+	max-width: 60%;
+	height: 20vh;
+	object-fit: contain;
+	padding-top: 1rem;
+}
+
+.social-item {
+  border: 1px solid;
+  border-radius: 0.6rem;
+  align-content: center;
+  text-align: center;
+  background-color: #242424;
+}
+
+.social-list {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  grid-gap: 1rem;
+}
+
+@media (min-width: 1024px)
+{
+  .social-list
+  {
+      grid-template-columns: repeat(3,minmax(0,1fr));
+	}
+}
+
+@media (min-width: 440px)
+{
+	.topLinks
+	{
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.topLinks-R
+	{
+		text-align: right;
+	}
+}
+
+.social-list a {
+	display: inline-block;
+	max-width: 90%;
+	text-align: center;
+	overflow-wrap: break-word;
+}
+

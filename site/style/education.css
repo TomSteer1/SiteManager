@@ -1,0 +1,13 @@
+.stage li a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+.modules li {
+    font-weight: bold;
+}
+
+.hint {
+    font-size: 90%;
+    font-style: italic;
+}
