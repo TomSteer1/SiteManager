@@ -174,7 +174,7 @@ func newSkill(portfolio *Portfolio, category *Category) *Skill{
 	return &skill
 }
 
-func removeSkill(portfolio *Portfolio, skill *Skill) {
+func removeSkill(portfolio *Portfolio, skill *Skill, skip ...bool) {
 	clear()
 	fmt.Println("Removing skill " + skill.Name + " from portfolio " + portfolio.Name)
 	delete(portfolio.Skills, skill.Id)
@@ -193,9 +193,11 @@ func removeSkill(portfolio *Portfolio, skill *Skill) {
 		}
 	}
 	savePortfolio(portfolio)	
-	fmt.Println("Skill removed")
-	fmt.Println("Press enter to continue")
-	bufio.NewReader(os.Stdin).ReadString('\n')
+	if len(skip) == 0 {
+		fmt.Println("Skill removed")
+		fmt.Println("Press enter to continue")
+		bufio.NewReader(os.Stdin).ReadString('\n')
+	}
 }
 
 func editSkill(skill *Skill) bool {
@@ -280,6 +282,30 @@ func addCategory(portfolio *Portfolio) *Category{
 }
 
 func removeCategory(portfolio *Portfolio, category *Category) {
+	clear()
+	var choice string
+	input(&choice, "Are you sure you want to remove category " + category.Name + "? (y/n)")
+	if choice == "y" {
+		for _, skill := range category.Skills {
+			sk := portfolio.Skills[skill]
+			removeSkill(portfolio, &sk,true)
+		}
+		for i, cat := range portfolio.Categories {
+			fmt.Println(cat.Id)
+			fmt.Println(category.Id)
+			if cat.Id == category.Id {
+				portfolio.Categories = append(portfolio.Categories[:i], portfolio.Categories[i+1:]...)
+				break
+			}
+		}
+		fmt.Println(portfolio.Categories)
+		savePortfolio(portfolio)
+		fmt.Println("Category removed")
+	} else {
+		fmt.Println("Category not removed")
+	}
+		fmt.Println("Press enter to continue")
+		bufio.NewReader(os.Stdin).ReadString('\n')
 }
 
 func editCategory(category *Category) bool {

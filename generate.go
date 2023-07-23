@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"os/exec"
 	"strings"
+	"net/http"
 )
 
 var navTemplate string 
@@ -21,7 +22,15 @@ func generatePortfolio(id string) {
 	generateEducation(&portfolio)
 	generateContact(&portfolio)
 	fmt.Println("Done!")
+	fmt.Println("Starting server on port 8080")
+	fmt.Println("Press enter to stop and return to menu")
+	s := &http.Server{
+		Addr: ":8080",
+		Handler: addHtml(http.FileServer(http.Dir("output/"+portfolio.Id))),
+	}
+	go	s.ListenAndServe()
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
+	s.Close()
 }
 
 func createBase(portfolio *Portfolio) {
@@ -35,7 +44,8 @@ func createBase(portfolio *Portfolio) {
 func generateIndex(portfolio *Portfolio) {
 	indexTemplate := loadTemplate("index.html")
 	indexTemplate = strings.Replace(indexTemplate, "##NAME##", portfolio.Name,-1)
-	os.WriteFile("output/"+portfolio.Id+"/index.html", []byte(indexTemplate), 0777)
+	indexTemplate = strings.Replace(indexTemplate, "##NAV##", navTemplate, -1)
+	os.WriteFile("output/"+portfolio.Id+"/index.html", []byte(indexTemplate), 0644)
 }
 
 
@@ -63,7 +73,7 @@ func generateCategories(portfolio *Portfolio) {
 	output = strings.Replace(output, "##CATEGORIES##", categories,-1)
 	output = strings.Replace(output, "##NAME##", portfolio.Name,-1)
 	output = strings.Replace(output, "##NAV##", navTemplate, -1)
-	os.WriteFile("output/"+portfolio.Id+"/skills.html", []byte(output), 0777)
+	os.WriteFile("output/"+portfolio.Id+"/skills.html", []byte(output), 0644)
 }
 
 func generateProjects(portfolio *Portfolio) {
@@ -89,21 +99,39 @@ func generateProjects(portfolio *Portfolio) {
 	output = strings.Replace(output, "##PROJECTS##", projects,-1)
 	output = strings.Replace(output, "##NAME##", portfolio.Name,-1)
 	output = strings.Replace(output, "##NAV##", navTemplate, -1)
-	os.WriteFile("output/"+portfolio.Id+"/projects.html", []byte(output), 0777)
+	os.WriteFile("output/"+portfolio.Id+"/projects.html", []byte(output), 0644)
 }
 
 func generateEducation(portfolio *Portfolio) {
+	education := ""
+	for _, edu := range portfolio.Education {
+		fmt.Println("Generating education", edu.Name)
+		eduTemplate := loadTemplate("education/" + edu.File + ".html")
+		education += eduTemplate + "\n"
+	}
 	output := loadTemplate("education.html")
 	output = strings.Replace(output, "##NAME##", portfolio.Name,-1)
 	output = strings.Replace(output, "##NAV##", navTemplate, -1)
-	os.WriteFile("output/"+portfolio.Id+"/education.html", []byte(output), 0777)
+	output = strings.Replace(output, "##EDUCATION##", education,-1)
+	os.WriteFile("output/"+portfolio.Id+"/education.html", []byte(output), 0644)
 }
 
 func generateContact(portfolio *Portfolio) {
-	output := loadTemplate("contact.html")
+	contacts := ""
+	for _, contact := range portfolio.Contacts {
+		fmt.Println("Generating contact", contact.Name)
+		contactTemplate := loadTemplate("contact.html")
+		contactTemplate = strings.Replace(contactTemplate, "##NAME##", contact.Name,-1)
+		contactTemplate = strings.Replace(contactTemplate, "##IMAGE##", contact.Image,-1)
+		contactTemplate = strings.Replace(contactTemplate, "##LINK##", contact.Link,-1)
+		contactTemplate = strings.Replace(contactTemplate, "##USERNAME##", contact.Username,-1)
+		contacts += contactTemplate + "\n"
+	}
+	output := loadTemplate("contacts.html")
 	output = strings.Replace(output, "##NAME##", portfolio.Name,-1)
 	output = strings.Replace(output, "##NAV##", navTemplate, -1)
-	os.WriteFile("output/"+portfolio.Id+"/contact.html", []byte(output), 0777)
+	output = strings.Replace(output, "##CONTACTS##", contacts,-1)
+	os.WriteFile("output/"+portfolio.Id+"/contact.html", []byte(output), 0644)
 }
 
 func loadTemplate(name string) string {
@@ -119,4 +147,13 @@ func loadTemplate(name string) string {
 		output += scanner.Text() + "\n"
 	}
 	return output
+}
+
+func addHtml(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path[len(r.URL.Path)-1] != '/' && !strings.Contains(r.URL.Path, ".") {
+			r.URL.Path += ".html"
+		}
+		next.ServeHTTP(w, r)
+	})
 }

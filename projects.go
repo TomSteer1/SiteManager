@@ -159,6 +159,27 @@ func addProjectSkill(portfolio *Portfolio, project *Project) {
 }
 
 func deleteProjectSkill(portfolio *Portfolio, project *Project) {
+	clear()
+	fmt.Println("Removing skill from project " + project.Name)
+	fmt.Println("Select skill")
+	for i, skill := range project.Skills {
+		fmt.Printf("%d. %s\n", i+1, portfolio.Skills[skill].Name)
+	}
+	fmt.Println("0. Back")
+	var choice int
+	input(&choice)
+	if choice > len(project.Skills) || choice < 0 {
+		deleteProjectSkill(portfolio,project)
+	}
+	if choice == 0 {
+		return
+	}
+	project.Skills = append(project.Skills[:choice-1], project.Skills[choice:]...)
+	savePortfolio(portfolio)
+	clear()
+	fmt.Println("Skill removed")
+	fmt.Print("Press enter to continue")
+	bufio.NewReader(os.Stdin).ReadString('\n')
 }
 
 func editProject(portfolio *Portfolio, project *Project) bool {
@@ -221,4 +242,21 @@ func editProject(portfolio *Portfolio, project *Project) bool {
 }
 
 func deleteProject(portfolio *Portfolio, project *Project) {
+	clear()
+	var choice string
+	input(&choice,"Are you sure you want to delete project " + project.Name + "? (y/n)")
+	if choice == "y" {
+		for i, p := range portfolio.Projects {
+			if p.Id == project.Id {
+				portfolio.Projects = append(portfolio.Projects[:i], portfolio.Projects[i+1:]...)
+				break
+			}
+		}
+		savePortfolio(portfolio)
+		fmt.Println("Project deleted")
+	} else {
+		fmt.Println("Project not deleted")
+	}
+	fmt.Println("Press enter to continue")
+	bufio.NewReader(os.Stdin).ReadString('\n')
 }
