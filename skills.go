@@ -185,6 +185,13 @@ func removeSkill(portfolio *Portfolio, skill *Skill) {
 			}
 		}
 	}
+	for i, project := range portfolio.Projects {
+		for j, skillId := range project.Skills {
+			if skillId == skill.Id {
+				portfolio.Projects[i].Skills = append(project.Skills[:j], project.Skills[j+1:]...)
+			}
+		}
+	}
 	savePortfolio(portfolio)	
 	fmt.Println("Skill removed")
 	fmt.Println("Press enter to continue")
