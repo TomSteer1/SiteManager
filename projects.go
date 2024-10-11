@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
-	"bufio"
 )
 
-func chooseProject(portfolio *Portfolio) (*Project) {
+func chooseProject(portfolio *Portfolio) *Project {
 	clear()
 	fmt.Println("Choose a project")
 	for i, project := range portfolio.Projects {
@@ -40,7 +40,8 @@ func editProjects(portfolio *Portfolio) bool {
 	case 2:
 		project := chooseProject(portfolio)
 		if project != nil {
-			for editProject(portfolio, project) {}
+			for editProject(portfolio, project) {
+			}
 		}
 	case 3:
 		project := chooseProject(portfolio)
@@ -81,14 +82,21 @@ func addProject(portfolio *Portfolio) {
 		fmt.Println("Image cannot be empty")
 		input(&project.Image, "Image")
 	}
+	input(&project.Link, "Link")
+	for project.Link == "" {
+		clear()
+		fmt.Println("Link cannot be empty")
+		input(&project.Link, "Link")
+	}
 	portfolio.Projects = append(portfolio.Projects, project)
 	savePortfolio(portfolio)
 	fmt.Print("Press enter to continue")
 	bufio.NewReader(os.Stdin).ReadString('\n')
 	var choice string
-	input(&choice,"Add skills? (y/n)") 
+	input(&choice, "Add skills? (y/n)")
 	if choice == "y" {
-		for editProjectSkills(portfolio,&project) {}
+		for editProjectSkills(portfolio, &project) {
+		}
 	}
 }
 
@@ -110,9 +118,9 @@ func editProjectSkills(portfolio *Portfolio, project *Project) bool {
 	input(&choice)
 	switch choice {
 	case 1:
-		addProjectSkill(portfolio,project)
+		addProjectSkill(portfolio, project)
 	case 2:
-		deleteProjectSkill(portfolio,project)
+		deleteProjectSkill(portfolio, project)
 	case 3:
 		return false
 	}
@@ -130,7 +138,7 @@ func addProjectSkill(portfolio *Portfolio, project *Project) {
 	var choice int
 	input(&choice)
 	if choice > len(portfolio.Categories) || choice < 0 {
-		addProjectSkill(portfolio,project)
+		addProjectSkill(portfolio, project)
 	}
 	var category *Category
 	if choice == 0 {
@@ -146,12 +154,12 @@ func addProjectSkill(portfolio *Portfolio, project *Project) {
 	fmt.Println("0. New skill")
 	input(&choice)
 	if choice > len(category.Skills) || choice < 0 {
-		addProjectSkill(portfolio,project)
+		addProjectSkill(portfolio, project)
 	}
 	var skill *Skill
 	if choice == 0 {
-		skill = newSkill(portfolio,category)
-	} else{	
+		skill = newSkill(portfolio, category)
+	} else {
 		skill = &tempSkills[choice-1]
 	}
 	project.Skills = append(project.Skills, skill.Id)
@@ -169,7 +177,7 @@ func deleteProjectSkill(portfolio *Portfolio, project *Project) {
 	var choice int
 	input(&choice)
 	if choice > len(project.Skills) || choice < 0 {
-		deleteProjectSkill(portfolio,project)
+		deleteProjectSkill(portfolio, project)
 	}
 	if choice == 0 {
 		return
@@ -195,11 +203,12 @@ func editProject(portfolio *Portfolio, project *Project) bool {
 	}
 	if len(project.Skills) > 0 {
 		skillsString = skillsString[:len(skillsString)-2]
-	} else{
+	} else {
 		skillsString = "None"
 	}
 	fmt.Println("5. Skills - " + skillsString)
-	fmt.Println("6. Back")
+	fmt.Println("6. Link - " + project.Link)
+	fmt.Println("7. Back")
 	var choice int
 	input(&choice)
 	clear()
@@ -233,8 +242,16 @@ func editProject(portfolio *Portfolio, project *Project) bool {
 			input(&project.Image, "Image")
 		}
 	case 5:
-		for editProjectSkills(portfolio,project) {}
+		for editProjectSkills(portfolio, project) {
+		}
 	case 6:
+		input(&project.Link, "Link")
+		for project.Link == "" {
+			clear()
+			fmt.Println("Link cannot be empty")
+			input(&project.Link, "Link")
+		}
+	case 7:
 		return false
 	}
 	savePortfolio(portfolio)
@@ -244,7 +261,7 @@ func editProject(portfolio *Portfolio, project *Project) bool {
 func deleteProject(portfolio *Portfolio, project *Project) {
 	clear()
 	var choice string
-	input(&choice,"Are you sure you want to delete project " + project.Name + "? (y/n)")
+	input(&choice, "Are you sure you want to delete project "+project.Name+"? (y/n)")
 	if choice == "y" {
 		for i, p := range portfolio.Projects {
 			if p.Id == project.Id {
